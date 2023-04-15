@@ -1,7 +1,15 @@
-import data from "../database/data.json";
+// import data from "../database/data.json";
 import { BiEdit, BiTrashAlt } from "react-icons/bi";
+import { useQuery } from "react-query";
+import { getUser } from "../lib/helper";
 
 export default function Table() {
+  const { isLoading, isError, data, error } = useQuery("users", getUser);
+
+  if (isLoading) return <div>Employee Data is Loading...</div>;
+
+  if (isError) return <div>Error: {error}</div>;
+
   return (
     <table className="min-w-full table-auto">
       <thead>
@@ -39,7 +47,11 @@ function Tr({ id, name, avatar, email, salary, date, status }) {
   return (
     <tr key={id} className="bg-gray-50 text-center">
       <td className="px-16 py-2 flex items-center">
-        <img src={avatar || "#"} alt="" />
+        <img
+          src={avatar || "#"}
+          alt=""
+          className="h-8 w-8 rounded-full object-cover"
+        />
         <span className="text-center ml-2 font-semibold">
           {name || "Unknown"}
         </span>
@@ -55,7 +67,11 @@ function Tr({ id, name, avatar, email, salary, date, status }) {
       </td>
       <td className="px-16 py-2">
         <button className="cursor-pointer">
-          <span className="bg-green-500 text-white px-5 py-1 rounded-full">
+          <span
+            className={`${
+              status == "Active" ? "bg-green-500" : "bg-red-500"
+            } text-white px-5 py-1 rounded-full`}
+          >
             {status || "Unknown"}
           </span>
         </button>

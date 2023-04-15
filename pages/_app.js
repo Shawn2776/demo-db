@@ -1,6 +1,8 @@
 import '../styles/globals.css'
-
+import { QueryClientProvider, QueryClient } from "react-query";
 import { Oswald } from "next/font/google";
+
+const queryClient = new QueryClient();
 
 const oswald = Oswald({
   subsets: ["latin"],
@@ -9,9 +11,11 @@ const oswald = Oswald({
 
 function MyApp({ Component, pageProps }) {
   return (
-    <div className={oswald.className}>
-      <Component {...pageProps} />
-    </div>
+    <QueryClientProvider client={queryClient}>
+      <div className={oswald.className}>
+        <Component {...pageProps} />
+      </div>
+    </QueryClientProvider>
   );
 }
 
