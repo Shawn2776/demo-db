@@ -1,11 +1,37 @@
 import Head from 'next/head'
-import { BiUserPlus } from "react-icons/bi";
-import Table from "../components/table";
+import { BiCheck, BiUserPlus, BiX } from "react-icons/bi";
+import Table from "../components/Table";
 import Form from "../components/Form";
-import { useState } from "react";
+// import { useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { deleteAction, toggleChangeAction } from "../redux/reducer";
+import { deleteUser, getUsers } from "../lib/helper";
+import { QueryClient, useQueryClient } from "react-query";
 
 export default function Home() {
-  const [isHidden, setIsHidden] = useState(true);
+  const visible = useSelector((state) => state.app.client.toggleForm);
+  const deleteId = useSelector((state) => state.app.client.deleteId);
+  const queryClient = useQueryClient();
+
+  const dispatch = useDispatch();
+
+  const handler = () => {
+    dispatch(toggleChangeAction());
+  };
+
+  const deleteHandler = async () => {
+    if (deleteId) {
+      await deleteUser(deleteId);
+      await queryClient.prefetchQuery("users", getUsers);
+      await dispatch(deleteAction(null));
+    }
+  };
+
+  const cancelHandler = async () => {
+    console.log("cancel");
+    await dispatch(deleteAction(null));
+  };
+
   return (
     <section>
       <Head>
@@ -21,7 +47,7 @@ export default function Home() {
         <div className="container mx-auto flex justify-between py-5 border-b">
           <div className="left flex gap-3">
             <button
-              onClick={() => setIsHidden(!isHidden)}
+              onClick={handler}
               className="flex bg-indigo-500 text-white px-4 py-2 border rounded-md hover:bg-indigo-400 hover:border-indigo-500 hover:text-gray-800"
             >
               Add Employee{" "}
@@ -30,18 +56,53 @@ export default function Home() {
               </span>
             </button>
           </div>
+          {deleteId ? DeleteComponent({ deleteHandler, cancelHandler }) : <></>}
 
           {/* collapsible form */}
 
           {/* table */}
         </div>
 
-        {isHidden ? <Form /> : <></>}
+        {visible ? <Form /> : <></>}
 
         <div className="container mx-auto">
           <Table />
         </div>
       </main>
     </section>
+  );
+}
+
+function DeleteComponent({ deleteHandler, cancelHandler }) {
+  return (
+    <div className="flex gap-5 items-center">
+      <button className="flex flex-col items-center max-w-[300px] font-extrabold text-black">
+        <span>Are you sure you want to delete this user? </span>
+        <span className="text-sm">
+          <em>
+            (This action will result in the permanent deletion of the specified
+            user and all related data.)
+          </em>
+        </span>
+      </button>
+      <button
+        onClick={deleteHandler}
+        className="flex bg-red-500 text-white px-4 py-2 border rounded-md hover:bg-red-400 hover:border-red-500 hover:text-gray-50 max-h-[40px]"
+      >
+        Yes{" "}
+        <span className="pl-1">
+          <BiCheck size={25} />
+        </span>
+      </button>
+      <button
+        onClick={cancelHandler}
+        className="flex bg-green-500 text-white px-4 py-2 border rounded-md hover:bg-green-400 hover:border-green-500 hover:text-gray-50 max-h-[40px]"
+      >
+        No{" "}
+        <span className="pl-1">
+          <BiX size={25} />
+        </span>
+      </button>
+    </div>
   );
 }

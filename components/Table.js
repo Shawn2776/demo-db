@@ -1,13 +1,19 @@
 // import data from "../database/data.json";
 import { BiEdit, BiTrashAlt } from "react-icons/bi";
 import { useQuery } from "react-query";
-import { getUser } from "../lib/helper";
+import { useSelector, useDispatch } from "react-redux";
+import {
+  toggleChangeAction,
+  updateAction,
+  deleteAction,
+} from "../redux/reducer";
+
+import { getUsers } from "../lib/helper";
 
 export default function Table() {
-  const { isLoading, isError, data, error } = useQuery("users", getUser);
+  const { isLoading, isError, data, error } = useQuery("users", getUsers);
 
   if (isLoading) return <div>Employee Data is Loading...</div>;
-
   if (isError) return <div>Error: {error}</div>;
 
   return (
@@ -43,9 +49,25 @@ export default function Table() {
   );
 }
 
-function Tr({ id, name, avatar, email, salary, date, status }) {
+function Tr({ _id, name, avatar, email, salary, date, status }) {
+  const visible = useSelector((state) => state.app.client.toggleForm);
+  const dispatch = useDispatch();
+
+  const onUpdate = () => {
+    dispatch(toggleChangeAction(_id));
+
+    if (visible) {
+      dispatch(updateAction(_id));
+    }
+  };
+
+  const onDelete = () => {
+    if (!visible) {
+      dispatch(deleteAction(_id));
+    }
+  };
   return (
-    <tr key={id} className="bg-gray-50 text-center">
+    <tr key={_id} className="bg-gray-50 text-center">
       <td className="px-16 py-2 flex items-center">
         <img
           src={avatar || "#"}
@@ -77,10 +99,10 @@ function Tr({ id, name, avatar, email, salary, date, status }) {
         </button>
       </td>
       <td className="px-16 py-2 justify-around gap-5">
-        <button className="cursor-pointer">
+        <button onClick={onUpdate} className="cursor-pointer">
           <BiEdit size={25} className="text-green-500" />
         </button>
-        <button className="cursor-pointer">
+        <button onClick={onDelete} className="cursor-pointer">
           <BiTrashAlt size={25} className="text-red-600" />
         </button>
       </td>

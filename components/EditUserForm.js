@@ -1,41 +1,35 @@
-import { useReducer } from "react";
 import { AiOutlineSave } from "react-icons/ai";
 import Success from "./Success";
+import { useQuery, useMutation, useQueryClient } from "react-query";
+import { getUser, getUsers, updateUser } from "../lib/helper";
 
-const formReducer = (state, event) => {
-  return {
-    ...state,
-    [event.target.name]: event.target.value,
-  };
-};
+export default function UpdateUserForm({ formId, formData, setFormData }) {
+  const queryClient = useQueryClient();
+  const { isLoading, isError, data, error } = useQuery(["users", formId], () =>
+    getUser(formId)
+  );
+  const UpdateMutation = useMutation((newData) => updateUser(formId, newData), {
+    onSuccess: async (data) => {
+      // queryClient.setQueryData("users", (old) => [data]);
+      queryClient.prefetchQuery("users", getUsers);
+    },
+  });
 
-export default function UpdateUserForm() {
-  const [formData, setFormData] = useReducer(formReducer, {});
+  if (isLoading) return <div>Loading User Information...</div>;
+  if (isError)
+    return <div>Error Loading User Information. Please try again.</div>;
 
-  const handleSubmit = (e) => {
+  const { name, avatar, salary, date, email, status } = data;
+  const [firstname, lastname] = name ? name.split(" ") : formData;
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (Object.keys(formData).length == 0) {
-      return console.log("No Form Data present!");
-    }
-    console.log(formData);
+    let userName = `${formData.firstname ?? firstname} ${
+      formData.lastname ?? lastname
+    }`;
+    let updated = Object.assign({}, data, formData, { name: userName });
+    await UpdateMutation.mutate(updated);
   };
-
-  if (Object.keys(formData).length > 0) {
-    return (
-      <>
-        <Success
-          message={`Employee: ${
-            formData.firstname.toUpperCase() +
-            " " +
-            formData.lastname?.toUpperCase() +
-            " " +
-            formData.email
-          } submitted successfully!`}
-        />
-        {console.log(formData)}
-      </>
-    );
-  }
 
   return (
     <form className="grid lg:grid-cols-2 w-4/6 gap-4" onSubmit={handleSubmit}>
@@ -43,6 +37,7 @@ export default function UpdateUserForm() {
         <input
           type="text"
           onChange={setFormData}
+          defaultValue={firstname}
           name="firstname"
           placeholder="First Name"
           className="border w-full px-5 py-3 focus:outline-none rounded-md"
@@ -52,6 +47,7 @@ export default function UpdateUserForm() {
         <input
           type="text"
           onChange={setFormData}
+          defaultValue={lastname}
           name="lastname"
           placeholder="Last Name"
           className="border w-full px-5 py-3 focus:outline-none rounded-md"
@@ -61,6 +57,7 @@ export default function UpdateUserForm() {
         <input
           type="text"
           onChange={setFormData}
+          defaultValue={email}
           name="email"
           placeholder="Email Address"
           className="border w-full px-5 py-3 focus:outline-none rounded-md"
@@ -70,6 +67,7 @@ export default function UpdateUserForm() {
         <input
           type="text"
           onChange={setFormData}
+          defaultValue={salary}
           name="salary"
           placeholder="Salary"
           className="border w-full px-5 py-3 focus:outline-none rounded-md"
@@ -79,6 +77,7 @@ export default function UpdateUserForm() {
         <input
           type="date"
           onChange={setFormData}
+          defaultValue={date}
           name="birthdate"
           placeholder="Birth Date"
           className="border px-5 py-3 focus:outline-none rounded-md"
@@ -90,6 +89,7 @@ export default function UpdateUserForm() {
           <input
             type="radio"
             onChange={setFormData}
+            defaultChecked={status == "Active" || "active"}
             name="status"
             value="active"
             id="radioDefault"
@@ -103,6 +103,7 @@ export default function UpdateUserForm() {
           <input
             type="radio"
             onChange={setFormData}
+            defaultChecked={status !== "Active" || "active"}
             name="status"
             value="inactive"
             id="radioDefault2"
