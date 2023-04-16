@@ -5,7 +5,7 @@ const initialState = {
 };
 
 export const ReducerSlice = createSlice({
-  name: "crduapp",
+  name: "crudapp",
   initialState,
   reducers: {
     toggleChangeAction: (state) => {

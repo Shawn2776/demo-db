@@ -1,5 +1,7 @@
-import { AiOutlineSave } from "react-icons/ai";
-import Success from "./Success";
+import { useReducer } from "react";
+import { BiBrush } from "react-icons/bi";
+import Success from "./success";
+import Bug from "./bug";
 import { useQuery, useMutation, useQueryClient } from "react-query";
 import { getUser, getUsers, updateUser } from "../lib/helper";
 
@@ -10,14 +12,13 @@ export default function UpdateUserForm({ formId, formData, setFormData }) {
   );
   const UpdateMutation = useMutation((newData) => updateUser(formId, newData), {
     onSuccess: async (data) => {
-      // queryClient.setQueryData("users", (old) => [data]);
+      // queryClient.setQueryData('users', (old) => [data])
       queryClient.prefetchQuery("users", getUsers);
     },
   });
 
-  if (isLoading) return <div>Loading User Information...</div>;
-  if (isError)
-    return <div>Error Loading User Information. Please try again.</div>;
+  if (isLoading) return <div>Loading...!</div>;
+  if (isError) return <div>Error</div>;
 
   const { name, avatar, salary, date, email, status } = data;
   const [firstname, lastname] = name ? name.split(" ") : formData;
@@ -39,8 +40,8 @@ export default function UpdateUserForm({ formId, formData, setFormData }) {
           onChange={setFormData}
           defaultValue={firstname}
           name="firstname"
-          placeholder="First Name"
           className="border w-full px-5 py-3 focus:outline-none rounded-md"
+          placeholder="FirstName"
         />
       </div>
       <div className="input-type">
@@ -49,8 +50,8 @@ export default function UpdateUserForm({ formId, formData, setFormData }) {
           onChange={setFormData}
           defaultValue={lastname}
           name="lastname"
-          placeholder="Last Name"
           className="border w-full px-5 py-3 focus:outline-none rounded-md"
+          placeholder="LastName"
         />
       </div>
       <div className="input-type">
@@ -59,8 +60,8 @@ export default function UpdateUserForm({ formId, formData, setFormData }) {
           onChange={setFormData}
           defaultValue={email}
           name="email"
-          placeholder="Email Address"
           className="border w-full px-5 py-3 focus:outline-none rounded-md"
+          placeholder="Email"
         />
       </div>
       <div className="input-type">
@@ -69,8 +70,8 @@ export default function UpdateUserForm({ formId, formData, setFormData }) {
           onChange={setFormData}
           defaultValue={salary}
           name="salary"
-          placeholder="Salary"
           className="border w-full px-5 py-3 focus:outline-none rounded-md"
+          placeholder="Salary"
         />
       </div>
       <div className="input-type">
@@ -78,9 +79,9 @@ export default function UpdateUserForm({ formId, formData, setFormData }) {
           type="date"
           onChange={setFormData}
           defaultValue={date}
-          name="birthdate"
-          placeholder="Birth Date"
+          name="date"
           className="border px-5 py-3 focus:outline-none rounded-md"
+          placeholder="Salary"
         />
       </div>
 
@@ -88,37 +89,37 @@ export default function UpdateUserForm({ formId, formData, setFormData }) {
         <div className="form-check">
           <input
             type="radio"
+            defaultChecked={status == "Active"}
             onChange={setFormData}
-            defaultChecked={status == "Active" || "active"}
+            value="Active"
+            id="radioDefault1"
             name="status"
-            value="active"
-            id="radioDefault"
-            className="form-check-input appearance-none rounded-full h-4 w-4 border border-gray-300 bg-white checked:bg-green-500 checked:border-green-500 focus:outline-none transition duration-200 mt-1 align-top bg-no-repeat bg-center bg-contain float-left mr-2 cursor-pointer"
+            className="form-check-input appearance-none rounded-full h-4 w-4 border border-gray-300  bg-white checked:bg-green-500 checked:border-green-500 focus:outline-none transition duration-200 mt-1 align-top bg-no-repeat bg-center bg-contain float-left mr-2 cursor-pointer"
           />
-          <label htmlFor="radioDefault" className="inline-block text-gray-800">
+          <label htmlFor="radioDefault1" className="inline-block tet-gray-800">
             Active
           </label>
         </div>
         <div className="form-check">
           <input
             type="radio"
+            defaultChecked={status !== "Active"}
             onChange={setFormData}
-            defaultChecked={status !== "Active" || "active"}
-            name="status"
-            value="inactive"
+            value="Inactive"
             id="radioDefault2"
-            className="form-check-input appearance-none rounded-full h-4 w-4 border border-gray-300 bg-white checked:bg-green-500 checked:border-green-500 focus:outline-none transition duration-200 mt-1 align-top bg-no-repeat bg-center bg-contain float-left mr-2 cursor-pointer"
+            name="status"
+            className="form-check-input appearance-none rounded-full h-4 w-4 border border-gray-300  bg-white checked:bg-green-500 checked:border-green-500 focus:outline-none transition duration-200 mt-1 align-top bg-no-repeat bg-center bg-contain float-left mr-2 cursor-pointer"
           />
-          <label htmlFor="radioDefault" className="inline-block text-gray-800">
+          <label htmlFor="radioDefault2" className="inline-block tet-gray-800">
             Inactive
           </label>
         </div>
       </div>
 
-      <button className="flex justify-center text-md w-2/6 bg-yellow-500 text-white px-4 py-2 border rounded-md hover:bg-gray-50 hover:border-yellow-500 hover:text-yellow-500">
+      <button className="flex justify-center text-md w-2/6 bg-yellow-400 text-white px-4 py-2 border rounded-md hover:bg-gray-50 hover:border-green-500 hover:text-green-500">
         Update{" "}
-        <span className="pl-1">
-          <AiOutlineSave size={24} />
+        <span className="px-1">
+          <BiBrush size={24}></BiBrush>
         </span>
       </button>
     </form>

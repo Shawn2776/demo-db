@@ -1,7 +1,7 @@
-import { useReducer } from "react";
-import AddUserForm from "./AddUserForm";
-import EditUserForm from "./EditUserForm";
+import UpdateUserForm from "./UpdateUserForm";
+import AddUserForm from "./addUserForm";
 import { useSelector } from "react-redux";
+import { useReducer } from "react";
 
 const formReducer = (state, event) => {
   return {
@@ -17,7 +17,7 @@ export default function Form() {
   return (
     <div className="container mx-auto py-5">
       {formId
-        ? EditUserForm({ formId, formData, setFormData })
+        ? UpdateUserForm({ formId, formData, setFormData })
         : AddUserForm({ formData, setFormData })}
     </div>
   );

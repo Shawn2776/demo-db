@@ -1,5 +1,5 @@
-// import data from "../database/data.json";
 import { BiEdit, BiTrashAlt } from "react-icons/bi";
+import { getUsers } from "../lib/helper";
 import { useQuery } from "react-query";
 import { useSelector, useDispatch } from "react-redux";
 import {
@@ -8,13 +8,11 @@ import {
   deleteAction,
 } from "../redux/reducer";
 
-import { getUsers } from "../lib/helper";
-
 export default function Table() {
   const { isLoading, isError, data, error } = useQuery("users", getUsers);
 
-  if (isLoading) return <div>Employee Data is Loading...</div>;
-  if (isError) return <div>Error: {error}</div>;
+  if (isLoading) return <div>Employee is Loading...</div>;
+  if (isError) return <div>Got Error {error}</div>;
 
   return (
     <table className="min-w-full table-auto">
@@ -55,7 +53,6 @@ function Tr({ _id, name, avatar, email, salary, date, status }) {
 
   const onUpdate = () => {
     dispatch(toggleChangeAction(_id));
-
     if (visible) {
       dispatch(updateAction(_id));
     }
@@ -66,9 +63,10 @@ function Tr({ _id, name, avatar, email, salary, date, status }) {
       dispatch(deleteAction(_id));
     }
   };
+
   return (
-    <tr key={_id} className="bg-gray-50 text-center">
-      <td className="px-16 py-2 flex items-center">
+    <tr className="bg-gray-50 text-center">
+      <td className="px-16 py-2 flex flex-row items-center">
         <img
           src={avatar || "#"}
           alt=""
@@ -82,28 +80,28 @@ function Tr({ _id, name, avatar, email, salary, date, status }) {
         <span>{email || "Unknown"}</span>
       </td>
       <td className="px-16 py-2">
-        <span>${salary || "Unknown"}</span>
+        <span>{salary || "Unknown"}</span>
       </td>
       <td className="px-16 py-2">
         <span>{date || "Unknown"}</span>
       </td>
       <td className="px-16 py-2">
-        <button className="cursor-pointer">
+        <button className="cursor">
           <span
             className={`${
-              status == "Active" ? "bg-green-500" : "bg-red-500"
+              status == "Active" ? "bg-green-500" : "bg-rose-500"
             } text-white px-5 py-1 rounded-full`}
           >
             {status || "Unknown"}
           </span>
         </button>
       </td>
-      <td className="px-16 py-2 justify-around gap-5">
-        <button onClick={onUpdate} className="cursor-pointer">
-          <BiEdit size={25} className="text-green-500" />
+      <td className="px-16 py-2 flex justify-around gap-5">
+        <button className="cursor" onClick={onUpdate}>
+          <BiEdit size={25} color={"rgb(34,197,94)"}></BiEdit>
         </button>
-        <button onClick={onDelete} className="cursor-pointer">
-          <BiTrashAlt size={25} className="text-red-600" />
+        <button className="cursor" onClick={onDelete}>
+          <BiTrashAlt size={25} color={"rgb(244,63,94)"}></BiTrashAlt>
         </button>
       </td>
     </tr>
